@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+:root {
+  --bg-100:  #0A0C10;
+  --bg-200:  #11141A;
+  --bg-card: #181C24;
+  --bg-border: #262B35;
+
+  --text-100: #ECEFF4;
+  --text-200: #A8B0BD;
+  --text-300: #6C7380;
+
+  --blue:        #3D8BFF;
+  --blue-hover:  #1F6FE8;
+  --blue-sub:    #0F2744;
+
+  --purple:       #B46CFF;
+  --purple-hover: #9A4DE8;
+  --purple-sub:   #28163D;
+
+  --success: #2ECC71;
+  --warning: #F1C40F;
+  --error:   #FF5A5A;
+}
+
+
+
+body {
+  background: var(--bg-100);
+  color: var(--text-100);
+  font-family: Arial, Helvetica, sans-serif;
+}

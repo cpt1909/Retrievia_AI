@@ -1,15 +1,12 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 from typing import List
 
-from qdrant_client.models import VectorParams, Distance
-from qdrant_client.models import PointStruct
+from qdrant_client.models import VectorParams, Distance, PointStruct
 
 async def insert_document(client, document_id, embeddings, dimension = 3072) -> bool:
     try:
-        if not client.collection_exists(document_id):
-           client.create_collection(
+        exists = await client.collection_exists(document_id)
+        if not exists:
+           await client.create_collection(
               collection_name = document_id,
               vectors_config = VectorParams(
                   size = dimension,
@@ -17,7 +14,7 @@ async def insert_document(client, document_id, embeddings, dimension = 3072) -> 
               ),
            )
 
-        client.upsert(
+        await client.upsert(
             collection_name = document_id,
             points = [
                 PointStruct(
@@ -28,11 +25,12 @@ async def insert_document(client, document_id, embeddings, dimension = 3072) -> 
             ],
         )
         return True
-    except:
+    except Exception as e:
+        print(e)
         return False
 
 async def fetch_vector_index(client, query_vector: List[float], uid: str) -> List[int]:
-    hits = client.query_points(
+    hits = await client.query_points(
         collection_name=uid,
         query=query_vector,
         limit=5,

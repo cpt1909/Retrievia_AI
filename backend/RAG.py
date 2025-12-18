@@ -1,39 +1,48 @@
 from docx import Document
 from docx.document import Document as TypeDocument
 import PyPDF2
-import os
-from typing import List, Tuple
-from dotenv import load_dotenv
-from google.genai.types import GenerateContentConfig
-import io
 
-load_dotenv()
+import io
+import os
+
+from typing import List, Tuple
+
+from google.genai.types import GenerateContentConfig
+from fastapi.concurrency import run_in_threadpool
 
 abspath = lambda filename : str(os.path.join(os.path.abspath(os.path.dirname(__file__)), filename))
 
 async def process_document(gclient, file_bytes, filename) -> Tuple[List[List[float]], List[str]]:
     text: str = await extract_text(file_bytes, filename)
-    chunks: List[str] = await chunker(text)
+    chunks: List[str] = chunker(text)
     embeddings: List[List[float]] = await generate_embeddings(gclient, chunks)
     return embeddings, chunks
 
 async def query_response(client, query: str, context: str) -> str:
 
-    if context:
-        response = client.models.generate_content(
-            model = "gemini-2.5-flash-lite",
-            contents = f"Context: {context}\n\nQuestion: {query}\n\nAnswer based on the context:",
-            config = GenerateContentConfig(
-                system_instruction = f"You are answering questions about a document. Do not add any formatting except punctuations."
-            ),
-        )
+    if not context:
+        return "No valid answers found ..."
 
-        return response.text
-    return "No valid answers found ..."
+    response = await run_in_threadpool(
+        client.models.generate_content,
+        model = "gemini-2.5-flash-lite",
+        contents = f"Context: {context}\n\nQuestion: {query}\n\nAnswer based on the context:",
+        config = GenerateContentConfig(
+            system_instruction = f"You are Retrievia, a RAG bot built by Thaarakenth. You are answering questions about a document. Do not add any formatting except punctuations."
+        ),
+    )
+    return response.text
 
 # EXTRACT TEXT FROM GIVEN DOCUMENT
-
 async def extract_text(file_bytes: bytes, filename: str) -> str:
+    text = await run_in_threadpool(
+        _extract_text_sync,
+        file_bytes,
+        filename
+    )
+    return text
+
+def _extract_text_sync(file_bytes: bytes, filename: str) -> str:
 
     _, ext = os.path.splitext(filename)
     extension: str = ext.lower().lstrip(".")
@@ -70,7 +79,7 @@ async def extract_text(file_bytes: bytes, filename: str) -> str:
 
 CHUNK_SIZE: int = 500
 OVERLAP: int = 100
-async def chunker(text: str) -> List[str]:
+def chunker(text: str) -> List[str]:
     chunks = []
     for start in range(0, len(text), CHUNK_SIZE - OVERLAP):
         chunk_text = text[start : start + CHUNK_SIZE]

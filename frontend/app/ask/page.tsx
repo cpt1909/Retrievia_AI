@@ -16,8 +16,7 @@ export default function Ask() {
         550: "The file either is corrupted or has no readable text."
     }
 
-    // const API_URL: string = process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8000";
-    const API_URL: string = "http://localhost:8000";
+    const API_URL: string = process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8000";
 
     const [showUploadSection, setShowUploadSection] = useState<boolean>(true);
     const [file, setFile] = useState<File | null>();
@@ -94,80 +93,94 @@ export default function Ask() {
     const [chatHistory, setChatHistory] = useState<{role: string, content: string}[]>([]);
 
     return (
-        <div>
-        {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm z-50">
-            <div className="flex flex-col items-center">
-                <div className="h-14 w-14 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-                <p className="mt-4 text-gray-700 text-lg font-medium">Loading...</p>
-            </div>
+    <div>
+        <div className="header w-1/1 mb-4 p-4">
+            <p className="text-primary text-center font-semibold text-4xl">Retrievia AI</p>
         </div>
+
+        {loading && (
+            <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
+                <div className="flex flex-col items-center">
+                    <div className="h-14 w-14 border-4 rounded-full animate-spin"></div>
+                    <p className="mt-4 text-lg font-medium">Loading...</p>
+                </div>
+            </div>
         )}
 
         {errorCode && (
-        <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full flex flex-col items-center justify-center">
-            <div className="border-2 rounded-2xl p-3 flex flex-col items-center justify-center">
-                <h3>Error Code: {errorCode}</h3>
-                <h4>{errorMessage[errorCode]}</h4>
-                <button
-                    onClick={() => {
-                        if (errorCode === 413 || errorCode === 415 || errorCode === 550){
-                            setFile(null);
-                        }
-                        setErrorCode(null);
-                    }}
-                >Close</button>
+            <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
+                <div className="border-2 rounded-2xl p-3 flex flex-col items-center justify-center">
+                    <h3>Error Code: {errorCode}</h3>
+                    <h4>{errorMessage[errorCode]}</h4>
+                    <button
+                        onClick={() => {
+                            if (errorCode === 413 || errorCode === 415 || errorCode === 550){
+                                setFile(null);
+                            }
+                            setErrorCode(null);
+                        }}
+                    >Close</button>
+                </div>
             </div>
-        </div>
         )}
 
         {showUploadSection && (
-        <div>
-            <label
-                htmlFor="fileInput"
-                className="block h-50 w-40 border-2 border-dashed border-gray-300 p-2 rounded"
-            >
-                Select a file
-                {file ? (
-                    <div>
-                        <p>{file.name}</p>
+            <section className="flex flex-col items-center">
+                <label
+                    htmlFor="fileInput"
+                    className="block w-9/10 h-30 border-2 border-dashed rounded-3xl"
+                >
+                    <div className="flex h-full p-6 items-center gap-5">
+                        <img src="file.svg" className="h-16" alt="file icon" />
+                        {!file ?
+                        <p> Select a file <br/>
+                        .PDF, .DOCX, .TXT
+                        </p> : <p>{file.name}</p>}
                     </div>
-                ) : ""}
-            </label>
-            <input
-                className="hidden"
-                id="fileInput"
-                name="fileInput"
-                type="file"
-                accept=".pdf, .txt, .docx"
-                onChange={(e) => {
-                    const files = e.target.files;
-                    if (files) {
-                        if(files[0].size > maxFileSize){
-                            setErrorCode(413);
-                            return;
+                </label>
+                <input
+                    className="hidden"
+                    id="fileInput"
+                    name="fileInput"
+                    type="file"
+                    accept=".pdf, .txt, .docx"
+                    onChange={(e) => {
+                        const files = e.target.files;
+                        if (files) {
+                            if(files[0].size > maxFileSize){
+                                setErrorCode(413);
+                                return;
+                            }
+                            
+                            const fileExtension: string = files[0].name.split(".").pop()?.toLowerCase() ?? "";
+                            const acceptedFileExtensions: string[] = ["pdf", "docx", "txt"];
+
+                            if(!acceptedFileExtensions.includes(fileExtension)){
+                                setErrorCode(415);
+                                return;
+                            }
+                            setFile(files[0]);
                         }
-                        
-                        const fileExtension: string = files[0].name.split(".").pop()?.toLowerCase() ?? "";
-                        const acceptedFileExtensions: string[] = ["pdf", "docx", "txt"];
+                    }}
+                />
 
-                        if(!acceptedFileExtensions.includes(fileExtension)){
-                            setErrorCode(415);
-                            return;
-                        }
-                        setFile(files[0]);
-                    }
-                }}
-            />
+                <div className="flex w-9/10 justify-around mt-6">
+                    <button
+                        className="w-60/100 h-12 rounded-xl font-medium"
+                        onClick={() => {
+                            handleUpload();
+                        }}
+                    >Submit</button>
+                    
+                    <button
+                        className="w-30/100 h-12 rounded-xl font-medium"
+                        onClick={() => {
+                            setFile(null);
+                        }}
+                    >Clear</button>
+                </div>
 
-            <button
-                type="submit"
-                onClick={() => {
-                    handleUpload();
-                }}
-            >Submit</button>
-
-        </div>
+            </section>
         )}
 
         {chatHistory.length > 0 && (
@@ -181,11 +194,10 @@ export default function Ask() {
         )}
 
         {showAskSection && (
-        <div>
-            
+        <section>
             <textarea
                 placeholder="Ask your question here..."
-                className="query h-32 w-3/4 border-2 border-gray-300 rounded-md p-3 text-wrap resize-none overflow-y-auto"
+                className="query h-32 w-3/4 border-2 rounded-md p-3 text-wrap resize-none overflow-y-auto"
                 value={query}
                 onChange={(e) => {
                     setQuery(e.target.value);
@@ -204,9 +216,9 @@ export default function Ask() {
                     <p>File Name: {file?.name}</p>
                 </div>
             )}
-        </div>
+        </section>
         )}
         
-        </div>
-    );
+    </div>
+);
 }

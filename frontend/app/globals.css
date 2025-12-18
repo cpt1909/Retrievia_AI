@@ -1,32 +1,44 @@
 @import "tailwindcss";
 
+/* :root {
+  --bg-main: #f5f8fa;
+  --surface-white: #ffffff;
+  --text-primary: #121317;
+  --text-secondary: #45474D;
+  --status-success: #34c759;
+  --status-error: #ff3b30;
+} */
+
 :root {
-  --bg-100:  #0A0C10;
-  --bg-200:  #11141A;
-  --bg-card: #181C24;
-  --bg-border: #262B35;
-
-  --text-100: #ECEFF4;
-  --text-200: #A8B0BD;
-  --text-300: #6C7380;
-
-  --blue:        #3D8BFF;
-  --blue-hover:  #1F6FE8;
-  --blue-sub:    #0F2744;
-
-  --purple:       #B46CFF;
-  --purple-hover: #9A4DE8;
-  --purple-sub:   #28163D;
-
-  --success: #2ECC71;
-  --warning: #F1C40F;
-  --error:   #FF5A5A;
+  --bg-main: #c8e0f4;
+  --surface-white: #ffffff;
+  --text-primary: #031927;
+  --text-secondary: #508aa8;
+  --status-success: #34c759;
+  --status-error: #ba1200;
 }
 
+@theme {
+  --font-body: var(--font-google-sans), ui-sans-serif, system-ui;
 
+  /* Mapping Tailwind utilities to CSS variables */
+  --color-background: var(--bg-main);
+  --color-surface: var(--surface-white);
+  
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  
+  --color-accent: var(--brand-blue);
+  --color-complement: var(--brand-teal);
+  
+  --color-success: var(--status-success);
+  --color-error: var(--status-error);
+}
 
-body {
-  background: var(--bg-100);
-  color: var(--text-100);
-  font-family: Arial, Helvetica, sans-serif;
+body{
+  font-family: var(--font-body);
+}
+
+.gsc{
+  font-family: var(--font-google-sans-code), monospace;
 }

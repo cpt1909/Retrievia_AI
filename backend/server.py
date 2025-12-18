@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from typing import List
 
-from qdrant_client import QdrantClient
-from pymongo import MongoClient
+from qdrant_client import AsyncQdrantClient
+from motor.motor_asyncio import AsyncIOMotorClient
 from google import genai
 
 import RAG
@@ -35,7 +35,7 @@ acceptableFileFormats: List[str] = ['docx', 'txt', 'pdf']
 CONNECTION_TIMEOUT: int = 60
 QDRANT_APK_KEY: str = os.getenv('QDRANT_API_KEY')
 QDRANT_ENDPOINT: str = os.getenv('QDRANT_ENDPOINT')
-qclient: QdrantClient = QdrantClient(
+qclient: AsyncQdrantClient = AsyncQdrantClient(
     api_key = QDRANT_APK_KEY,
     url = QDRANT_ENDPOINT,
     timeout = CONNECTION_TIMEOUT,
@@ -46,7 +46,7 @@ print("QdrantDB Connection Established !!")
 # MongoDB Connection
 DB_NAME = os.getenv('DB_NAME')
 CONNECTION_STRING: str = os.getenv('MONGODB_CONNECTION_STRING')
-mclient = MongoClient(CONNECTION_STRING)
+mclient = AsyncIOMotorClient(CONNECTION_STRING)
 db = mclient[f"{DB_NAME}"]
 document_col = db['documents']
 print("MongoDB Connection Established !!")
@@ -82,7 +82,8 @@ async def upload(file: UploadFile = File(...)) -> JSONResponse:
     embeddings, chunks = await RAG.process_document(gclient, file_bytes, filename)
     if embeddings:
         uid: str = await insert_chunks(filename, document_col, chunks)
-        if await insert_document(qclient, uid, embeddings, len(embeddings[0])):
+        success: bool = await insert_document(qclient, uid, embeddings, len(embeddings[0]))
+        if success:
             return JSONResponse(status_code=200, content={
                 "status": "success",
                 "uid": uid,

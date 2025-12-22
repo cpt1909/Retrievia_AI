@@ -43,9 +43,11 @@ export default function Ask() {
                 setShowAskSection(true);
             }else{
                 setErrorCode(res.status);
+                setFileName(null);
             };
         }catch(e){
             setErrorCode(503);
+            setFileName(null);
         }finally{
             setLoading(false);
         }

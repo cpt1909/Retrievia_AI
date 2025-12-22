@@ -173,4 +173,4 @@ This project is licensed under the MIT License.
 
 ## Author
 
-Developed by [**Thaarakenth C P**]("https://www.github.com/cpt1909")
+Developed by [Thaarakenth C P](https://www.github.com/cpt1909)

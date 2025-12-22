@@ -16,7 +16,7 @@ export default function Ask() {
         550: "The file either is corrupted or has no readable text."
     }
 
-    const API_URL: string = process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8000";
+    const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
     const [showUploadSection, setShowUploadSection] = useState<boolean>(true);
     const [file, setFile] = useState<File | null>();
@@ -33,7 +33,7 @@ export default function Ask() {
             const form: FormData = new FormData();
             form.append("file", file);
 
-            const res = await fetch(`${API_URL}/upload`, {
+            const res = await fetch(`${API_URL}/fileUpload`, {
                 method: "POST",
                 body: form,
             });
@@ -72,7 +72,7 @@ export default function Ask() {
             form.append("uid", fileUId);
             setChatHistory(prev => [...prev, {role: "You", content: query}]);
 
-            const res = await fetch(`${API_URL}/query`, {
+            const res = await fetch(`${API_URL}/askQuery`, {
                 method: "POST",
                 body: form,
             });

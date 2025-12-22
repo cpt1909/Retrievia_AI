@@ -8,6 +8,16 @@ export const googleSans = localFont({
       style: "normal",
     },
     {
+      path: "../public/fonts/google-sans/GoogleSans-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/google-sans/GoogleSans-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
       path: "../public/fonts/google-sans/GoogleSans-Bold.woff2",
       weight: "700",
       style: "normal",

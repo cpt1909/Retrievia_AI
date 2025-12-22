@@ -28,9 +28,6 @@
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
   
-  --color-accent: var(--brand-blue);
-  --color-complement: var(--brand-teal);
-  
   --color-success: var(--status-success);
   --color-error: var(--status-error);
 }

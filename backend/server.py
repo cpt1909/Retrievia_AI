@@ -58,15 +58,15 @@ gclient = genai.Client(
 )
 print("Gemini Connection Established !!")
 
-@app.get("/")
-async def status():
+@app.get("/health")
+async def health():
     return JSONResponse(
         status_code=200,
         content = {
-            "status": "OK",
+            "status": "LIVE",
     })
 
-@app.post("/upload")
+@app.post("/fileUpload")
 async def upload(file: UploadFile = File(...)) -> JSONResponse:
     if not file:
         return JSONResponse(status_code=422, content={})
@@ -90,7 +90,7 @@ async def upload(file: UploadFile = File(...)) -> JSONResponse:
             })
     return JSONResponse(status_code=550, content={})
 
-@app.post("/query")
+@app.post("/askQuery")
 async def generate_response(query: str = Form(...), uid: str= Form(...)):
     query_vector: List[List[float]] = await RAG.generate_embeddings(gclient, [query])
     query_vector: List[float] = query_vector[0]

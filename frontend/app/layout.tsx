@@ -14,6 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${googleSans.variable} ${googleSansCode.variable}`}>
+      <head>
+        <meta name="google-site-verification" content="heeESflfYd3eXBk_J9IkGkxoLf_-sN_t_0pHkRvIK5Q" />
+      </head>
       <body className="bg-background text-primary antialiased">
         {children}
       </body>

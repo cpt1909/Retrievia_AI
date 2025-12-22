@@ -25,22 +25,22 @@ export default function Home() {
     }, [])
 
     return (
-        <div className="min-h-dvh flex flex-col justify-between">
+        <div className="min-h-dvh flex flex-col justify-between select-none">
             <p className="text-center mt-8 md:mt-15 md:text-xl">{connectionStatus}</p>
             <div className="flex flex-col items-center">
                 <BlurText
                     text="Retrievia AI"
                     delay={150}
-                    animateBy="words"
+                    animateBy="letters"
                     direction="top"
                     className="justify-center tracking-tight text-primary text-5xl md:text-7xl font-bold mt-15 md:mt-0 mb-5"
                 />
 
                 <div className="flex gap-2 items-center mb-10">
-                    <p className="font-semibold text-2xl">Ask your</p>
+                    <p className="font-semibold text-2xl md:text-4xl">Ask your</p>
                     <RotatingText
                         texts={['PDF', 'DOC', 'TXT']}
-                        mainClassName="w-20 md:w-25 h-10 md:h-12 font-semibold bg-primary text-2xl md:text-4xl text-white overflow-hidden justify-center rounded-lg"
+                        mainClassName="w-20 md:w-25 h-10 md:h-14 font-semibold bg-primary text-2xl md:text-4xl text-white overflow-hidden justify-center rounded-lg"
                         staggerFrom={"last"}
                         initial={{ y: "100%" }}
                         animate={{ y: 0 }}
@@ -52,11 +52,11 @@ export default function Home() {
                     />
                 </div>
                 
-                <p className="max-w-3/4 text-justify md:text-xl mb-12 inline-block">A lightweight, RAG-based chatbot that lets you upload your files and ask questions to get clear, accurate, and context-aware answers.</p>
+                <p className="max-w-3/4 text-justify md:text-3xl mb-12 inline-block">A lightweight, RAG-based chatbot that lets you upload your files and ask questions to get clear, accurate, and context-aware answers.</p>
                 <Link href="/ask">
                     <button
                         type="button"
-                        className="bg-primary text-white font-medium p-4 rounded-4xl mb-10"
+                        className="bg-primary text-white font-medium p-4 border-2 border-primary rounded-4xl mb-10 md:text-2xl hover:bg-white hover:text-primary"
                         onClick={()=>{
                         }}
                     >{'Start Asking'}</button>

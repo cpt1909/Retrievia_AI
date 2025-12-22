@@ -19,19 +19,16 @@ export default function Ask() {
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
     const [showUploadSection, setShowUploadSection] = useState<boolean>(true);
-    const [file, setFile] = useState<File | null>();
+    const [fileName, setFileName] = useState<string | null>(null);
+    const [fileExtension, setFileExtension] = useState<string | null>();
     const maxFileSize: number = 10 * 1024 * 1024;
 
-    async function handleUpload(){
-        if (!file){
-            setErrorCode(422);
-            return;
-        };
+    async function handleUpload(selectedFile: File){
 
         try{
             setLoading(true);
             const form: FormData = new FormData();
-            form.append("file", file);
+            form.append("file", selectedFile);
 
             const res = await fetch(`${API_URL}/fileUpload`, {
                 method: "POST",
@@ -47,10 +44,10 @@ export default function Ask() {
             }else{
                 setErrorCode(res.status);
             };
-            setLoading(false);
         }catch(e){
-            setLoading(false);
             setErrorCode(503);
+        }finally{
+            setLoading(false);
         }
     }
 
@@ -94,9 +91,7 @@ export default function Ask() {
 
     return (
     <div>
-        <div className="header w-1/1 mb-4 p-4">
-            <p className="text-primary text-center font-semibold text-4xl">Retrievia AI</p>
-        </div>
+        <p className="tracking-tight text-primary text-center pt-4 pb-4 text-4xl md:text-5xl font-bold">Retrievia AI</p>
 
         {loading && (
             <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
@@ -114,9 +109,6 @@ export default function Ask() {
                     <h4>{errorMessage[errorCode]}</h4>
                     <button
                         onClick={() => {
-                            if (errorCode === 413 || errorCode === 415 || errorCode === 550){
-                                setFile(null);
-                            }
                             setErrorCode(null);
                         }}
                     >Close</button>
@@ -125,18 +117,24 @@ export default function Ask() {
         )}
 
         {showUploadSection && (
-            <section className="flex flex-col items-center">
+            <section className="flex flex-col items-center mt-20">
+                <p className="text-2xl font-bold">Ask your Docs</p>
+                <p className="w-3/4 mt-2 text-justify">Select a file to ask questions and get clear, accurate, and context-aware answers.</p>
                 <label
                     htmlFor="fileInput"
-                    className="block w-9/10 h-30 border-2 border-dashed rounded-3xl"
+                    className="block w-3/4 min-h-24 bg-primary text-white rounded-3xl mt-16"
                 >
-                    <div className="flex h-full p-6 items-center gap-5">
-                        <img src="file.svg" className="h-16" alt="file icon" />
-                        {!file ?
-                        <p> Select a file <br/>
-                        .PDF, .DOCX, .TXT
-                        </p> : <p>{file.name}</p>}
-                    </div>
+                    {!fileName ?
+                        <div className="h-1/1 flex flex-col justify-center gap-3 pt-4 pb-4">
+                            <p className="text-center font-semibold text-3xl"> Select a file </p>
+                            <p className="text-center">File Type: PDF, DOCX, TXT</p>
+                        </div> : 
+                        
+                        <div className="h-1/1 flex flex-col justify-center items-center gap-3 pt-8 pb-8">
+                            <img src={`${fileExtension}.png`} width={64} height={64}></img>
+                            <p className="text-center">{fileName}</p>
+                        </div>
+                    }
                 </label>
                 <input
                     className="hidden"
@@ -146,39 +144,30 @@ export default function Ask() {
                     accept=".pdf, .txt, .docx"
                     onChange={(e) => {
                         const files = e.target.files;
-                        if (files) {
-                            if(files[0].size > maxFileSize){
-                                setErrorCode(413);
-                                return;
-                            }
-                            
-                            const fileExtension: string = files[0].name.split(".").pop()?.toLowerCase() ?? "";
-                            const acceptedFileExtensions: string[] = ["pdf", "docx", "txt"];
 
-                            if(!acceptedFileExtensions.includes(fileExtension)){
-                                setErrorCode(415);
-                                return;
-                            }
-                            setFile(files[0]);
+                        if (!files || files.length === 0) return;
+
+                        const selectedFile = files[0]
+                        setFileName(selectedFile.name);
+                        const ext: string = files[0].name.split(".").pop()?.toLowerCase() ?? "";
+                        const acceptedFileExtensions: string[] = ["pdf", "docx", "txt"];
+
+                        if(!acceptedFileExtensions.includes(ext)){
+                            setErrorCode(415);
+                            setFileName(null);
+                            return;
                         }
+
+                        if(files[0].size > maxFileSize){
+                            setErrorCode(413);
+                            setFileName(null);
+                            return;
+                        }
+
+                        setFileExtension(ext);
+                        handleUpload(selectedFile);
                     }}
                 />
-
-                <div className="flex w-9/10 justify-around mt-6">
-                    <button
-                        className="w-60/100 h-12 rounded-xl font-medium"
-                        onClick={() => {
-                            handleUpload();
-                        }}
-                    >Submit</button>
-                    
-                    <button
-                        className="w-30/100 h-12 rounded-xl font-medium"
-                        onClick={() => {
-                            setFile(null);
-                        }}
-                    >Clear</button>
-                </div>
 
             </section>
         )}
@@ -213,7 +202,7 @@ export default function Ask() {
             {fileUId && (
                 <div>
                     <p>File UId: {fileUId}</p>
-                    <p>File Name: {file?.name}</p>
+                    <p>File Name: {fileName}</p>
                 </div>
             )}
         </section>

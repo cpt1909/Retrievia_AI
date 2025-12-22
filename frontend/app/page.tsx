@@ -1,10 +1,14 @@
 "use client";
 import BlurText from "@/components/blurText";
 import RotatingText from "@/components/rotatingText";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
+
+    const router: AppRouterInstance = useRouter();
     
     const [connectionStatus, setConnectionStatus] = useState<string>("🟡 Connecting...");
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -57,14 +61,13 @@ export default function Home() {
                 </div>
                 
                 <p className="max-w-3/4 text-justify md:text-3xl mb-12 inline-block">A lightweight, RAG-based chatbot that lets you upload your files and ask questions to get clear, accurate, and context-aware answers.</p>
-                <Link href="/ask">
                     <button
                         type="button"
-                        className="bg-primary text-white font-medium p-4 border-2 border-primary rounded-4xl mb-10 md:text-2xl hover:bg-white hover:text-primary"
+                        className="bg-primary text-white font-medium p-4 border-2 border-primary rounded-4xl mb-10 md:text-2xl hover:bg-white hover:text-primary cursor-pointer"
                         onClick={()=>{
+                            router.push("/ask")
                         }}
                     >{'Start Asking'}</button>
-                </Link>
             </div>
             <div className="flex flex-col gap-3 bg-primary text-white p-4 text-center">
                 <p>Created with ❤️ by <Link href="https://www.github.com/cpt1909" target="_blank"><strong>Thaarakenth C P</strong></Link></p>

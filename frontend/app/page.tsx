@@ -37,7 +37,7 @@ export default function Home() {
                     <BlurText
                         text="Retrievia AI"
                         delay={150}
-                        animateBy="letters"
+                        animateBy="words"
                         direction="top"
                         className="justify-center tracking-tight text-primary text-5xl md:text-7xl font-bold"
                     />
@@ -72,7 +72,7 @@ export default function Home() {
             <div className="flex flex-col gap-3 bg-primary text-white p-4 text-center">
                 <p>Created with ❤️ by <Link href="https://www.github.com/cpt1909" target="_blank"><strong>Thaarakenth C P</strong></Link></p>
                 <Link href="https://www.github.com/cpt1909/Retrievia_AI" target="_blank">
-                        <p className="text-sm">View Github Repository</p>
+                        <p className="text-sm inline-block">View Github Repository</p>
                 </Link>
             </div>
         </div>

@@ -28,13 +28,17 @@ export default function Home() {
         <div className="min-h-dvh flex flex-col justify-between select-none">
             <p className="text-center mt-8 md:mt-15 md:text-xl">{connectionStatus}</p>
             <div className="flex flex-col items-center">
-                <BlurText
-                    text="Retrievia AI"
-                    delay={150}
-                    animateBy="letters"
-                    direction="top"
-                    className="justify-center tracking-tight text-primary text-5xl md:text-7xl font-bold mt-15 md:mt-0 mb-5"
-                />
+                <div className="flex flex-col md:flex-row md:gap-4 items-center mt-10 md:mt-0 mb-5">
+                    <img src={"logo-blue.png"} className="w-16 md:w-36" />
+                    <BlurText
+                        text="Retrievia AI"
+                        delay={150}
+                        animateBy="letters"
+                        direction="top"
+                        className="justify-center tracking-tight text-primary text-5xl md:text-7xl font-bold"
+                    />
+                </div>
+                
 
                 <div className="flex gap-2 items-center mb-10">
                     <p className="font-semibold text-2xl md:text-4xl">Ask your</p>

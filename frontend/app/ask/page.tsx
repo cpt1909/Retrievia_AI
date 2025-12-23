@@ -1,7 +1,12 @@
 "use client";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Ask() {
+
+    const appRouter: AppRouterInstance = useRouter();
 
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -64,12 +69,12 @@ export default function Ask() {
         };
 
         try{
-            setLoading(true);
+            setChatLoading(true);
             const form: FormData = new FormData();
             form.append("query", query);
             setQuery("");
             form.append("uid", fileUId);
-            setChatHistory(prev => [...prev, {role: "You", content: query}]);
+            setChatHistory(prev => [...prev, {role: "user", content: query}]);
 
             const res = await fetch(`${API_URL}/askQuery`, {
                 method: "POST",
@@ -78,29 +83,36 @@ export default function Ask() {
 
             const data = await res.json();
             if(res.ok){
-                setChatHistory(prev => [...prev, {role: "Bot", content: data.reply}]);
+                setChatHistory(prev => [...prev, {role: "bot", content: data.reply}]);
             }else{
                 setErrorCode(res.status);
             };
-            setLoading(false);
+            setChatLoading(false);
         }catch(e){
-            setLoading(false);
+            setChatLoading(false);
             setErrorCode(503);
         }
     }
 
     const [chatHistory, setChatHistory] = useState<{role: string, content: string}[]>([]);
+    const [chatLoading, setChatLoading] = useState<boolean>(false);
 
     return (
-    <div>
-        <p className="tracking-tight text-primary text-center pt-4 pb-4 text-4xl md:text-5xl font-bold">Retrievia AI</p>
-
+    <div className="flex flex-col min-h-dvh">
+        <div className="shrink-0 flex gap-3 items-center p-3 pb-0 justify-between">
+            <img src="logo-blue.png" width={60} height={60} />
+            <button
+                type="button"
+                className="bg-primary text-white p-2 rounded-xl w-25"
+                onClick={()=>{
+                    appRouter.back();
+                }}>Return</button>
+        </div>
+        
         {loading && (
-            <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50">
-                <div className="flex flex-col items-center">
-                    <div className="h-14 w-14 border-4 rounded-full animate-spin"></div>
-                    <p className="mt-4 text-lg font-medium">Loading...</p>
-                </div>
+            <div className="fixed inset-0 z-50 flex flex-col gap-3 items-center justify-center bg-secondary/10 backdrop-blur-sm">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-300 border-t-primary"></div>
+                <p className="text-center text-primary">Please Wait ...</p>
             </div>
         )}
 
@@ -119,97 +131,128 @@ export default function Ask() {
         )}
 
         {showUploadSection && (
-            <section className="flex flex-col items-center mt-20">
-                <p className="text-2xl font-bold">Ask your Docs</p>
-                <p className="w-3/4 mt-2 text-justify">Select a file to ask questions and get clear, accurate, and context-aware answers.</p>
-                <label
-                    htmlFor="fileInput"
-                    className="block w-3/4 min-h-24 bg-primary text-white rounded-3xl mt-16"
-                >
-                    {!fileName ?
-                        <div className="h-1/1 flex flex-col justify-center gap-3 pt-4 pb-4">
-                            <p className="text-center font-semibold text-3xl"> Select a file </p>
-                            <p className="text-center">File Type: PDF, DOCX, TXT</p>
-                        </div> : 
-                        
-                        <div className="h-1/1 flex flex-col justify-center items-center gap-3 pt-8 pb-8">
-                            <img src={`${fileExtension}.png`} width={64} height={64}></img>
-                            <p className="text-center">{fileName}</p>
-                        </div>
-                    }
-                </label>
-                <input
-                    className="hidden"
-                    id="fileInput"
-                    name="fileInput"
-                    type="file"
-                    accept=".pdf, .txt, .docx"
-                    onChange={(e) => {
-                        const files = e.target.files;
-
-                        if (!files || files.length === 0) return;
-
-                        const selectedFile = files[0]
-                        setFileName(selectedFile.name);
-                        const ext: string = files[0].name.split(".").pop()?.toLowerCase() ?? "";
-                        const acceptedFileExtensions: string[] = ["pdf", "docx", "txt"];
-
-                        if(!acceptedFileExtensions.includes(ext)){
-                            setErrorCode(415);
-                            setFileName(null);
-                            return;
+            <section className="flex flex-col flex-1 justify-center">
+                <div className="flex flex-col items-center">
+                    <p className="text-2xl font-bold">Ask your Docs</p>
+                    <p className="w-3/4 mt-2 text-justify">Select a file to ask questions and get clear, accurate, and context-aware answers.</p>
+                    <label
+                        htmlFor="fileInput"
+                        className="block w-3/4 min-h-24 bg-primary text-white rounded-3xl mt-8"
+                    >
+                        {!fileName ?
+                            <div className="h-1/1 flex flex-col justify-center gap-3 pt-4 pb-4">
+                                <p className="text-center font-semibold text-3xl"> Select a file </p>
+                                <p className="text-center">File Type: PDF, DOCX, TXT</p>
+                            </div> : 
+                            
+                            <div className="h-1/1 flex flex-col justify-center items-center gap-3 pt-8 pb-8">
+                                <img src={`${fileExtension}.png`} width={64} height={64}></img>
+                                <p className="text-center">{fileName}</p>
+                            </div>
                         }
+                    </label>
+                    <input
+                        className="hidden"
+                        id="fileInput"
+                        name="fileInput"
+                        type="file"
+                        accept=".pdf, .txt, .docx"
+                        onChange={(e) => {
+                            const files = e.target.files;
 
-                        if(files[0].size > maxFileSize){
-                            setErrorCode(413);
-                            setFileName(null);
-                            return;
-                        }
+                            if (!files || files.length === 0) return;
 
-                        setFileExtension(ext);
-                        handleUpload(selectedFile);
-                    }}
-                />
+                            const selectedFile = files[0]
+                            setFileName(selectedFile.name);
+                            const ext: string = files[0].name.split(".").pop()?.toLowerCase() ?? "";
+                            const acceptedFileExtensions: string[] = ["pdf", "docx", "txt"];
 
+                            if(!acceptedFileExtensions.includes(ext)){
+                                setErrorCode(415);
+                                setFileName(null);
+                                return;
+                            }
+
+                            if(files[0].size > maxFileSize){
+                                setErrorCode(413);
+                                setFileName(null);
+                                return;
+                            }
+
+                            setFileExtension(ext);
+                            handleUpload(selectedFile);
+                        }}
+                    />
+                </div>
             </section>
         )}
 
-        {chatHistory.length > 0 && (
-        <div>
-            {chatHistory.map((message, index) => (
-                <div key={index}>
-                    <p>{message.role}: {message.content}</p>
-                </div>
-            ))}
-        </div>
-        )}
 
         {showAskSection && (
-        <section>
-            <textarea
-                placeholder="Ask your question here..."
-                className="query h-32 w-3/4 border-2 rounded-md p-3 text-wrap resize-none overflow-y-auto"
-                value={query}
-                onChange={(e) => {
-                    setQuery(e.target.value);
-                }}
-            />
-            <button
-                type="submit"
-                onClick={() => {
-                    handleAsk();
-                }}
-            >Submit</button>
-
+        <section className="p-2 flex-1 flex flex-col justify-between">
             {fileUId && (
-                <div>
-                    <p>File UId: {fileUId}</p>
-                    <p>File Name: {fileName}</p>
-                </div>
+                <p className="text-center shrink-0">Answering from <strong>{fileName}</strong></p>
             )}
+
+            {(chatHistory.length > 0) ? (
+                <div className="min-h-0 flex flex-col justify-end flex-1 gap-4 rounded-2xl p-2 pt-4 pb-4 overflow-y-auto">
+                        {chatHistory.map((message, index) => (
+                            <div key={index} className="flex gap-2 items-start">
+                                <img src={`${message.role}.svg`} width={38} height={38} className={`${(message.role == "user" ? "bg-primary" : "bg-white")} p-1.5 rounded-full border border-primary`}/>
+                                <p className="text-wrap break-all">{message.content}</p>
+                            </div>
+                        ))}
+                        {chatLoading && (
+                            <div className="flex gap-2 items-start">
+                                <img src={"bot.svg"} width={38} height={38} className="bg-white p-1.5 rounded-full border border-primary" />
+                                <div className="flex items-center gap-1 px-3 py-2 rounded-full bg-gray-100 w-fit">
+                                    <span className="h-2 w-2 rounded-full bg-gray-500 animate-bounce [animation-delay:0ms]" />
+                                    <span className="h-2 w-2 rounded-full bg-gray-500 animate-bounce [animation-delay:150ms]" />
+                                    <span className="h-2 w-2 rounded-full bg-gray-500 animate-bounce [animation-delay:300ms]" />
+                                </div>
+
+                            </div>
+                        )}
+                </div>
+                ) : <p className="text-center">Start chatting ...</p>}
+            
+            <div className="flex shrink-0 items-end border border-primary p-2 rounded-3xl gap-2">
+                <textarea
+                    placeholder="Ask your question here..."
+                    className="w-full rounded-3xl text-wrap resize-none overflow-y-auto p-2 focus:outline-none"
+                    value={query}
+                    rows={1}
+                    
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAsk();
+                        }
+                    }}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                    }}
+                />
+                <img
+                    className="bg-primary pt-2 pr-2 pb-2 pl-2 rounded-full"
+                    src={"send.png"}
+                    width={42}
+                    height={42}
+                    onClick={() => {
+                        handleAsk();
+                    }}
+                ></img>
+            </div>
         </section>
         )}
-        
+
+        <div className="flex flex-col shrink-0 gap-3 bg-primary text-white p-4 text-center">
+            <p>Created with ❤️ by <Link href="https://www.github.com/cpt1909" target="_blank"><strong>Thaarakenth C P</strong></Link></p>
+            <Link href="https://www.github.com/cpt1909/Retrievia_AI" target="_blank">
+                    <p className="text-sm inline-block">View Github Repository</p>
+            </Link>
+        </div>
+    
     </div>
 );
 }

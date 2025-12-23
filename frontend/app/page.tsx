@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
 
-    const router: AppRouterInstance = useRouter();
+    const appRouter: AppRouterInstance = useRouter();
     
     const [connectionStatus, setConnectionStatus] = useState<string>("🟡 Connecting...");
     const API_URL: string = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -65,7 +65,7 @@ export default function Home() {
                         type="button"
                         className="bg-primary text-white font-medium p-4 border-2 border-primary rounded-4xl mb-10 md:text-2xl hover:bg-white hover:text-primary cursor-pointer"
                         onClick={()=>{
-                            router.push("/ask")
+                            appRouter.push("/ask")
                         }}
                     >{'Start Asking'}</button>
             </div>

@@ -85,12 +85,12 @@ export default function Ask() {
             if(res.ok){
                 setChatHistory(prev => [...prev, {role: "bot", content: data.reply}]);
             }else{
-                setErrorCode(res.status);
+                setChatHistory(prev => [...prev, {role: "bot", content: errorMessage[res.status]}]);
             };
             setChatLoading(false);
         }catch(e){
             setChatLoading(false);
-            setErrorCode(503);
+            setChatHistory(prev => [...prev, {role: "bot", content: "Oops! Something went wrong!"}]);
         }
     }
 

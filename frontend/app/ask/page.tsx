@@ -203,7 +203,7 @@ export default function Ask() {
                             </div>
                         ))}
                         {chatLoading && (
-                            <div className="flex gap-2 items-start">
+                            <div className="flex gap-2 items-center">
                                 <img src={"bot.svg"} width={38} height={38} className="bg-white p-1.5 rounded-full border border-primary" />
                                 <div className="flex items-center gap-1 px-3 py-2 rounded-full w-fit">
                                     <span className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />

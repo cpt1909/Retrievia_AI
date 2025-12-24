@@ -32,6 +32,10 @@
   --color-error: var(--status-error);
 }
 
+html, body{
+  height: 100%;
+}
+
 body{
   font-family: var(--font-body);
 }

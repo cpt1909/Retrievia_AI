@@ -242,6 +242,10 @@ export default function Ask() {
             </div>
         </section>
         )}
+
+        <div className="flex flex-col gap-3 bg-primary text-white p-4 text-center">
+            <p>Created with ❤️ by <Link href="https://www.github.com/cpt1909" target="_blank"><strong>Thaarakenth C P</strong></Link></p>
+        </div>
     </div>
 );
 }

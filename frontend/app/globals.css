@@ -43,3 +43,29 @@ body{
 .gsc{
   font-family: var(--font-google-sans-code), monospace;
 }
+
+@media (min-width:768px) {
+  /* WebKit browsers */
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--bg-main); /* zinc-600 */
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bg-main); /* zinc-500 */
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-primary) transparent;
+  }
+}

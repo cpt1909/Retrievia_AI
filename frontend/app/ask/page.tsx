@@ -98,8 +98,8 @@ export default function Ask() {
     const [chatLoading, setChatLoading] = useState<boolean>(false);
 
     return (
-    <div className="mainContainer h-screen flex flex-col justify-between">
-        <div className="header flex items-center p-3 pb-0 justify-between">
+    <div className="mainContainer h-screen flex flex-col justify-between lg:items-center">
+        <div className="header flex items-center p-3 pb-0 justify-between lg:items-center lg:min-w-4xl lg:max-w-7xl">
             <img src="logo-blue.png" width={60} height={60} />
             <button
                 type="button"
@@ -131,9 +131,9 @@ export default function Ask() {
         )}
 
         {showUploadSection && (
-            <section className="uploadSection flex flex-col items-center mt-2 mb-2">
-                <p className="text-2xl font-bold">Ask your Docs</p>
-                <p className="w-3/4 mt-2 text-justify">Select a file to ask questions and get clear, accurate, and context-aware answers.</p>
+            <section className="uploadSection flex flex-col items-center mt-2 mb-2 lg:items-center lg:max-w-7xl">
+                <p className="text-2xl font-bold lg:text-4xl">Ask your Docs</p>
+                <p className="w-3/4 mt-2 text-justify md:text-center lg:text-2xl">Select a file to ask questions and get clear, accurate, and context-aware answers.</p>
                 <label
                     htmlFor="fileInput"
                     className="block w-3/4 min-h-24 bg-primary text-white rounded-3xl mt-8"
@@ -187,9 +187,9 @@ export default function Ask() {
 
 
         {showAskSection && (
-        <section className="askSection min-h-0 p-2 flex-1 flex flex-col justify-between">
+        <section className="askSection min-h-0 p-2 flex-1 flex flex-col justify-between lg:min-w-4xl lg:max-w-7xl">
             {fileUId && (
-                <p className="text-center p-1 border border-dashed rounded-xl">Answering from <strong>{fileName}</strong></p>
+                <p className="text-center p-1 border border-dashed rounded-xl lg:min-w-4xl lg:max-w-4xl overflow-hidden text-wrap break-all max-h-14">Answering from <strong>{fileName}</strong></p>
             )}
 
             {(chatHistory.length > 0) ? (
@@ -213,23 +213,27 @@ export default function Ask() {
                 </div>
                 ) : <p className="text-center">Start chatting ...</p>}
             
-            <div className="chatInput flex border border-primary p-2 mb-2 rounded-3xl gap-2">
-                <textarea
-                    placeholder="Ask your question here..."
-                    className="w-full rounded-3xl resize-none overflow-hidden p-2 focus:outline-none whitespace-pre-wrap"
-                    value={query}
-                    rows={1}
-                    
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleAsk();
-                        }
-                    }}
-                    onChange={(e) => {
-                        setQuery(e.target.value);
-                    }}
-                />
+            <div className="chatInput flex border border-primary p-2 mb-2 rounded-3xl gap-2 items-center">
+                <div className="w-full">
+                    <textarea
+                        placeholder="Ask your question here..."
+                        className="w-full rounded-3xl resize-none overflow-hidden p-2 focus:outline-none whitespace-pre-wrap"
+                        value={query}
+                        rows={1}
+                        maxLength={150}
+                        
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            handleAsk();
+                            }
+                        }}
+                        onChange={(e) => {
+                            setQuery(e.target.value);
+                        }}
+                    />
+                    <p className={`text-end ${(150 - query.length) === 0 ? "text-red-700" : ""} text-sm`}>{150 - query.length}/150</p>
+                </div>
                 <img
                     className="bg-primary pt-2 pr-2 pb-2 pl-2 rounded-full"
                     src={"send.png"}
@@ -243,7 +247,7 @@ export default function Ask() {
         </section>
         )}
 
-        <div className="flex flex-col gap-3 bg-primary text-white p-4 text-center">
+        <div className="flex flex-col gap-3 bg-primary text-white p-4 text-center min-w-screen">
             <p>Created with ❤️ by <Link href="https://www.github.com/cpt1909" target="_blank"><strong>Thaarakenth C P</strong></Link></p>
         </div>
     </div>
